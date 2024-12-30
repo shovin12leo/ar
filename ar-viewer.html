@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Tap Interaction - Code-Based Message</title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      height: 100vh;
+    }
+    #message {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ff5733;  /* Change text color here */
+      font-size: 24px;
+      font-family: Arial, sans-serif;
+      z-index: 1;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="message">You tapped the screen!</div>
+
+  <a-scene embedded>
+    <!-- Camera for AR experience -->
+    <a-entity id="camera" camera position="0 1.6 0" look-controls="enabled: true"></a-entity>
+
+    <!-- A simple text for tap prompt -->
+    <a-text value="Tap anywhere to see the message!" position="0 2 -5" scale="2 2 2" color="#FFF" id="tapMessage"></a-text>
+
+    <!-- Invisible cursor for detecting touch events -->
+    <a-entity cursor="fuse: false; maxDistance: 10" position="0 1.5 -3"></a-entity>
+  </a-scene>
+
+  <script>
+    // Function to get the code from the URL
+    function getCodeFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('code');
+    }
+
+    // Set message based on the code
+    function setMessageBasedOnCode(code) {
+      const message = {
+        'code1': 'This is your message for code1!',
+        'code2': 'This is your message for code2!',
+        'code3': 'This is your message for code3!',
+        // Add more code-message mappings as needed
+      };
+
+      // Set the message based on the code
+      const messageText = message[code] || 'Invalid code!';
+      const messageDiv = document.getElementById("message");
+      messageDiv.textContent = messageText;
+    }
+
+    // Function to show the message at the tap position
+    function showMessage(event) {
+      const messageDiv = document.getElementById("message");
+
+      // Get the intersection point where the tap occurred
+      const intersection = event.detail.intersection;
+
+      if (intersection) {
+        // Show HTML message for a short time (3 seconds)
+        messageDiv.style.display = "block"; // Show message on screen
+        setTimeout(() => {
+          messageDiv.style.display = "none"; // Hide HTML message after 3 seconds
+        }, 3000);
+      }
+    }
+
+    // Get code from the URL and set the message
+    const code = getCodeFromUrl();
+    setMessageBasedOnCode(code);
+
+    // Add event listener to handle user taps (in 3D space)
+    document.querySelector('a-scene').addEventListener('click', showMessage);
+  </script>
+</body>
+</html>
